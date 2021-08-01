@@ -1,0 +1,89 @@
+
+Note of studying for gRPC.
+===
+
+Googleが開発したリモートプロシージャコール(RPC)。HTTP/2を使用した双方向のサービス間通信を実現する。
+
+基盤にある技術はProtocol Buffersと呼ばれるもので、概要はさまざまな言語間やホスト間でのやり取りをするための決まりのようなもので、パット見は独自のプログラミング言語のような雰囲気がある。
+
+多くの言語での共通のデータ型や関数の決まりごとをすることで、開発がスムーズになりマイクロサービスとの相性がよい。JSONに近い感覚かも。
+
+REST APIに代わる技術して注目されている。
+
+https://grpc.io
+
+https://developers.google.com/protocol-buffers
+
+
+3 Elements
+===
+
+gRPCで必要な要素は、大きく分けて
+
+* サーバー
+
+* クライアント
+
+* IDL(.proto)
+
+の3つ。設定ファイルを元にサーバーとクライアントプログラムをそれぞれ記述していくことにより、
+
+2つとも設定ファイルの内容を認識できている。なので、クライアントからサーバーに設定にかかれている関数をコールしても、正しい結果をクライアント側で取得することができる。
+
+gRPC
+===
+
+特徴として、
+
+* シリアライズ
+    送信データをProtocol Buffersでシリアライズしてバイナリに変換させるため、送信データ量が少なく高速になる。
+
+* HTTP/2
+    HTTP1.1よりも無駄を省き(ヘッダの圧縮、双方向通信、バイナリベースなど)、コンパクトかつ高速化されている。
+
+https://blog.redbox.ne.jp/http2-cdn.htm://blog.redbox.ne.jp/http2-cdn.html
+
+通信の種類としては、全部で4種類が用意されている。
+
+* Unary RPCs: 1リクエスト/1レスポンス
+
+* Server Streaming RPCs: 1リクエスト/複数レスポンス
+
+* Client Streaming RPCs: 複数リクエスト/1レスポンス
+
+* Duplex Streaming RPCs: 双方向ストリーミング通信。リクエスト・レスポンスが1対1である必要がない。
+
+
+https://blog.xin9le.net/entry/2017/06/11/182515
+
+IDL
+===
+
+Interface Definition Languageの略。
+
+
+Flow
+===
+
+ざっくりとして手順についての概要をまとめる。
+
+.protoファイルでやり取りするメッセージを定義したり、プロシージャ(サービス)を定義する。
+
+```
+
+python -m grpc_tools.protoc -I. \
+--python_out=. \
+--grpc_python_out=. \
+./ex.proto # 定義した.protoファイル
+
+```
+
+このコマンドgRPCファイルが生成される。_pb2,_pb2_grpc。
+
+このファイル内の定義を元に、サーバーコードとクライアントコードを作成する。
+
+
+最後にサーバーを起動してからクライアントを実行すると、RPCが行われる。
+
+
+https://knowledge.sakura.ad.jp/24059/
